@@ -84,7 +84,7 @@ are welcome!
 IRC
 ---
 
-There is an IRC channel on `irc.freenode.net` - `#lightstone` - for discussing
+There is an IRC channel on `irc.esper.net` - `#lightstone` - for discussing
 development. Feel free to drop by some time.
 
 Copyright
