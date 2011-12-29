@@ -8,7 +8,7 @@ Introduction
 
 Lightstone is an open-source implementation of the
 [Minecraft](http://minecraft.net) server software written in Java. 
-It was originally created by [Graham Edgecombe](https://github.com/grahamedgecombe), but UnXoft Interactive
+It was originally created by [Graham Edgecombe](https://github.com/grahamedgecombe), but [UnXoft Interactive](http://unxoft.com)
 has picked up development on it as of Minecraft 1.0.
 
 The official server software has some shortcomings such as the use of threaded,
