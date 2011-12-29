@@ -78,7 +78,7 @@ Source Code
 -----------
 
 The original Lightstone source code can be found on
-[GitHub](https://github.com/grahamedgecombe/lightstone). Feedback and patches
+[GitHub](https://github.comUnXoft-Interactive/lightstone). Feedback and patches
 are welcome!
 
 IRC
