@@ -1,10 +1,14 @@
 package net.lightstone.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.lightstone.msg.EntityRotationMessage;
 import net.lightstone.msg.EntityTeleportMessage;
 import net.lightstone.msg.Message;
 import net.lightstone.msg.RelativeEntityPositionMessage;
 import net.lightstone.msg.RelativeEntityPositionRotationMessage;
+import net.lightstone.msg.EntityMetadataMessage;
 import net.lightstone.world.World;
 import net.lightstone.util.Parameter;
 

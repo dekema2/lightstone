@@ -3,6 +3,9 @@ package net.lightstone.model;
 import net.lightstone.msg.Message;
 import net.lightstone.msg.SpawnMobMessage;
 import net.lightstone.world.World;
+import net.lightstone.model.mob.ai.AI;
+import net.lightstone.model.mob.ai.DummyAI;
+import net.lightstone.model.mob.MobLookup;
 
 /**
  * Represents a monster such as a creeper.
@@ -14,6 +17,7 @@ public final class Monster extends Mob {
 	 * The type of monster.
 	 */
 	private final int type;
+	private final AI ai;
 
 	/**
 	 * Creates a new monster.
@@ -23,6 +27,7 @@ public final class Monster extends Mob {
 	public Monster(World world, int type) {
 		super(world);
 		this.type = type;
+		this.ai = new DummyAI(this);
 	}
 
 	/**
@@ -31,6 +36,16 @@ public final class Monster extends Mob {
 	 */
 	public int getType() {
 		return type;
+	}
+
+	public AI getAI(){
+		return ai;
+	}
+
+	@Override
+	public void pulse(){
+		super.pulse();
+		getAI().pulse();
 	}
 
 	@Override

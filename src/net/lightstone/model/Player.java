@@ -14,6 +14,8 @@ import net.lightstone.msg.SpawnPlayerMessage;
 import net.lightstone.msg.EntityMetadataMessage;
 import net.lightstone.net.Session;
 import net.lightstone.util.Parameter;
+import net.lightstone.msg.ChangeStateMessage;
+import net.lightstone.msg.TimeMessage;
 
 /**
  * Represents an in-game player.
@@ -57,12 +59,22 @@ public final class Player extends Mob {
 	private boolean crouching = false;
 
 	/**
+	 * This player's inventory.
+	 */
+	private Inventory inventory = new Inventory(this);
+
+	/**
+	 * The active slot of the player's inventory.
+	 */
+	private int activeSlot = 0;
+
+	/**
 	 * Creates a new player and adds it to the world.
 	 * @param session The player's session.
 	 * @param name The player's name.
 	 */
 	public Player(Session session, String name) {
-		super(session.getServer().getWorld());
+		super(session.getServer().getWorld(session.getDimension()));
 		this.name = name;
 		this.session = session;
 
@@ -71,6 +83,10 @@ public final class Player extends Mob {
 		this.position = world.getSpawnPosition();
 		this.sendMessage("§eWelcome to Lightstone, " + name + "!");
 		this.session.send(new PositionRotationMessage(position.getX(), position.getY(), position.getZ(), position.getY() + NORMAL_EYE_HEIGHT, (float) rotation.getYaw(), (float) rotation.getPitch(), true));
+		if(world.isRaining()){
+			this.session.send(new ChangeStateMessage(ChangeStateMessage.START_RAINING));
+		}
+		this.session.send(new TimeMessage(world.getTime()));
 	}
 
 	/**
@@ -194,5 +210,31 @@ public final class Player extends Mob {
 		return crouching;
 	}
 
+	/**
+	 * Gets the Inventory associated with this player.
+	 * @return This player's inventory.
+	 */
+	public Inventory getInventory() {
+		return inventory;
+	}
+
+	/**
+	 * Gets the current activated slot of the player's inventory.
+	 * @return The index of the active slot. 
+	 */
+	public int getActiveSlot() {
+		return activeSlot;
+	}
+
+	/**
+	 * Sets this player's active inventory slot.
+	 * @param slot The index of the activated slot.
+	 */
+	public void setActiveSlot(int slot) {
+		if (!(slot>=0 && slot<=9)) {
+			throw new IllegalArgumentException("Not a valid slot");
+		}
+		activeSlot = slot;
+	}
 }
 
