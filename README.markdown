@@ -1,13 +1,15 @@
 Lightstone
 ==========
 
-![Lightstone Logo](https://github.com/grahamedgecombe/lightstone/raw/master/etc/logo/logo-small.png)
+![Lightstone Logo](https://github.com/UnXoft-Interactive/lightstone/raw/master/etc/logo/logo-small.png)
 
 Introduction
 ------------
 
 Lightstone is an open-source implementation of the
-[Minecraft](http://minecraft.net) server software written in Java.
+[Minecraft](http://minecraft.net) server software written in Java. 
+It was originally created by [Graham Edgecombe](https://github.com/grahamedgecombe), but UnXoft Interactive
+has picked up development on it as of Minecraft 1.0.
 
 The official server software has some shortcomings such as the use of threaded,
 synchronous I/O along with high CPU and RAM usage. Lightstone aims to be a
@@ -51,9 +53,8 @@ Credits
 
 ### Contributors
 
- * [Graham Edgecombe](https://github.com/grahamedgecombe)
- * [Jonathan Edgecombe](http://jonathanedgecombe.com)
- * [Zhuowei Zhang](https://github.com/zhuowei)
+ * [Graham Edgecombe](https://github.com/grahamedgecombe) - the original creator of lightstone
+
 
 ### Miscellaneous Credits
 
