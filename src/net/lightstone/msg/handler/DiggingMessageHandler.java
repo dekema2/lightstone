@@ -1,54 +1,74 @@
 package net.lightstone.msg.handler;
 
-import net.lightstone.model.Blocks;
-import net.lightstone.model.Player;
+import net.lightstone.block.BlockID;
+import net.lightstone.block.BlockProperties;
+import net.lightstone.msg.BlockPlacementMessage;
+import org.bukkit.Effect;
+import org.bukkit.GameMode;
+import org.bukkit.block.Block;
+import org.bukkit.event.Event;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+
+import net.lightstone.EventFactory;
+import net.lightstone.GlowWorld;
+import net.lightstone.entity.GlowPlayer;
 import net.lightstone.msg.DiggingMessage;
-import net.lightstone.model.Chunk;
-import net.lightstone.msg.BlockChangeMessage;
-import net.lightstone.msg.SoundEffectMessage;
 import net.lightstone.net.Session;
-import net.lightstone.world.World;
 
 /**
  * A {@link MessageHandler} which processes digging messages.
- * @author Zhuowei Zhang
  */
 public final class DiggingMessageHandler extends MessageHandler<DiggingMessage> {
 
-	@Override
-	public void handle(Session session, Player player, DiggingMessage message) {
-		if (player == null)
-			return;
+    @Override
+    public void handle(Session session, GlowPlayer player, DiggingMessage message) {
+        if (player == null)
+            return;
 
-		if (message.getState() == DiggingMessage.STATE_DONE_DIGGING) {
-			World world = player.getWorld();
+        boolean blockBroken = false;
 
-			int x = message.getX();
-			int z = message.getZ();
-			int y = message.getY();
+        GlowWorld world = player.getWorld();
 
-			// TODO it might be nice to move these calculations somewhere else since they will need to be reused
-			int chunkX = x / Chunk.WIDTH + ((x < 0 && x % Chunk.WIDTH != 0) ? -1 : 0);
-			int chunkZ = z / Chunk.HEIGHT + ((z < 0 && z % Chunk.HEIGHT != 0) ? -1 : 0);
+        int x = message.getX();
+        int y = message.getY();
+        int z = message.getZ();
 
-			int localX = (x - chunkX * Chunk.WIDTH) % Chunk.WIDTH;
-			int localZ = (z - chunkZ * Chunk.HEIGHT) % Chunk.HEIGHT;
+        Block block = world.getBlockAt(x, y, z);
 
-			Chunk chunk = world.getChunks().getChunk(chunkX, chunkZ);
-			int oldType = chunk.getType(localX, localZ, y);
-			chunk.setType(localX, localZ, y, Blocks.TYPE_AIR);
+        // Need to have some sort of verification to deal with malicious clients.
+        if (message.getState() == DiggingMessage.STATE_START_DIGGING) {
+            Action act = Action.LEFT_CLICK_BLOCK;
+            if (player.getLocation().distanceSquared(block.getLocation()) > 36 || block.getTypeId() == BlockID.AIR) {
+                act = Action.LEFT_CLICK_AIR;
+            }
+            PlayerInteractEvent interactEvent = EventFactory.onPlayerInteract(player, act, block, MessageHandlerUtils.messageToBlockFace(message.getFace()));
+            if (interactEvent.isCancelled()) return;
+            if (interactEvent.useItemInHand() == Event.Result.DENY) return;
+            // TODO: Item interactions
+            BlockDamageEvent event = EventFactory.onBlockDamage(player, block);
+            if (!event.isCancelled()) {
+                blockBroken = event.getInstaBreak() || player.getGameMode() == GameMode.CREATIVE;
+            }
+        } else if (message.getState() == DiggingMessage.STATE_DONE_DIGGING) {
+            BlockBreakEvent event = EventFactory.onBlockBreak(block, player);
+            if (!event.isCancelled()) {
+                blockBroken = true;
+            }
+        }
 
-			// TODO this should also be somewhere else as well... perhaps in the chunk.setType() method itself?
-			BlockChangeMessage bcmsg = new BlockChangeMessage(x, y, z, 0, 0);
-			SoundEffectMessage soundMsg = new SoundEffectMessage(SoundEffectMessage.DIG_SOUND, x, y, z, oldType);
-			for (Player p: world.getPlayers()) {
-				p.getSession().send(bcmsg);
-				if(p != player && player.isWithinDistance(p)) {
-					p.getSession().send(soundMsg);
-				}
-			}
-		}
-	}
+        if (blockBroken) {
+            if (!block.isEmpty() && !block.isLiquid()) {
+                if ((!player.getInventory().contains(block.getType()) || player.getGameMode() != GameMode.CREATIVE)) {
+                    player.getInventory().addItem(BlockProperties.get(block.getTypeId()).getDrops(block.getData()));
+                }
+            }
+            world.playEffectExceptTo(block.getLocation(), Effect.STEP_SOUND, block.getTypeId(), 64, player);
+            block.setTypeId(BlockID.AIR);
+        }
+    }
 
 }
-

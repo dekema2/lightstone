@@ -1,26 +1,25 @@
 package net.lightstone.msg.handler;
 
-import net.lightstone.model.Player;
+import net.lightstone.entity.GlowPlayer;
 import net.lightstone.msg.HandshakeMessage;
 import net.lightstone.net.Session;
 import net.lightstone.net.Session.State;
 
-/**
- * A {@link MessageHandler} which performs the initial handshake with clients.
- * @author Graham Edgecombe
- */
 public final class HandshakeMessageHandler extends MessageHandler<HandshakeMessage> {
 
-	@Override
-	public void handle(Session session, Player player, HandshakeMessage message) {
-		Session.State state = session.getState();
-		if (state == Session.State.EXCHANGE_HANDSHAKE) {
-			session.setState(State.EXCHANGE_IDENTIFICATION);
-			session.send(new HandshakeMessage("-"));
-		} else {
-			session.disconnect("Handshake already exchanged.");
-		}
-	}
+    @Override
+    public void handle(Session session, GlowPlayer player, HandshakeMessage message) {
+        Session.State state = session.getState();
+        if (state == Session.State.EXCHANGE_HANDSHAKE) {
+            session.setState(State.EXCHANGE_IDENTIFICATION);
+            if (session.getServer().getOnlineMode()) {
+                session.send(new HandshakeMessage(session.getSessionId()));
+            } else {
+                session.send(new HandshakeMessage("-"));
+            }
+        } else {
+            session.disconnect("Handshake already exchanged.");
+        }
+    }
 
 }
-

@@ -1,31 +1,32 @@
 package net.lightstone.msg;
 
-/**
- * A message to update a map in the player's inventory.
- */
+import java.util.Arrays;
 
-public final class MapDataMessage extends Message {
+public class MapDataMessage extends Message {
+    
+    private final short type, id;
+    private final byte[] data;
+    
+    public MapDataMessage(short type, short id, byte[] data) {
+        this.type = type;
+        this.id = id;
+        this.data = data;
+    }
+    
+    public short getType() {
+        return type;
+    }
+    
+    public short getId() {
+        return id;
+    }
+    
+    public byte[] getData() {
+        return data;
+    }
 
-	private final int id;
-
-	private final byte[] data;
-
-	/**
-	 * @param id The id of the map to update.
-	 * @param data The new map data.
-	 */
-	public MapDataMessage(int id, byte[] data) {
-		this.id = id;
-		this.data = data;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public byte[] getData() {
-		return data;
-	}
-
+    @Override
+    public String toString() {
+        return "MapDataMessage{type=" + type + ",id=" + ",data=" + Arrays.toString(data) + "}";
+    }
 }
-

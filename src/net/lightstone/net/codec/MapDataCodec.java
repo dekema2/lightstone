@@ -1,39 +1,40 @@
 package net.lightstone.net.codec;
 
-import net.lightstone.msg.MapDataMessage;
-import net.lightstone.util.ChannelBufferUtils;
+import java.io.IOException;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 
+import net.lightstone.msg.MapDataMessage;
+
 public final class MapDataCodec extends MessageCodec<MapDataMessage> {
 
-	public MapDataCodec() {
-		super(MapDataMessage.class, 0x83);
-	}
+    public MapDataCodec() {
+        super(MapDataMessage.class, 0x83);
+    }
 
-	@Override
-	public MapDataMessage decode(ChannelBuffer buffer) {
-		//first short, according to mc.kev009.com:
-		//"Unknown constant value(s)"
-		int constant = buffer.readShort();
-		int id = buffer.readShort();
-		int length = buffer.readUnsignedByte();
-		byte[] data = new byte[length];
-		buffer.readBytes(data);
-		return new MapDataMessage(id, data);
-	}
+    @Override
+    public MapDataMessage decode(ChannelBuffer buffer) throws IOException {
+        short type = buffer.readShort();
+        short id = buffer.readShort();
+        short size = buffer.readUnsignedByte();
+        
+        byte[] data = new byte[size];
+        for (int i = 0; i < data.length; ++i) {
+            data[i] = buffer.readByte();
+        }
+        
+        return new MapDataMessage(type, id, data);
+    }
 
-	@Override
-	public ChannelBuffer encode(MapDataMessage message) {
-		byte[] data = message.getData();
-		ChannelBuffer buffer = ChannelBuffers.buffer(5 + data.length);
-		buffer.writeShort(0); //FIXME
-		buffer.writeShort(message.getId());
-		buffer.writeByte(data.length);
-		buffer.writeBytes(data, 0, data.length);
-		return buffer;
-	}
+    @Override
+    public ChannelBuffer encode(MapDataMessage message) throws IOException {
+        ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+        buffer.writeShort(message.getType());
+        buffer.writeShort(message.getId());
+        buffer.writeByte(message.getData().length);
+        buffer.writeBytes(message.getData());
+        return buffer;
+    }
 
 }
-

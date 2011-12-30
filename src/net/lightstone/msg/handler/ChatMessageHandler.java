@@ -1,32 +1,29 @@
 package net.lightstone.msg.handler;
 
-import net.lightstone.cmd.CommandManager;
-import net.lightstone.model.Player;
+import java.util.logging.Level;
+
+import org.bukkit.ChatColor;
+
+import net.lightstone.GlowServer;
+import net.lightstone.entity.GlowPlayer;
 import net.lightstone.msg.ChatMessage;
 import net.lightstone.net.Session;
 
-/**
- * A {@link MessageHandler} which handles {@link ChatMessage}s by processing
- * commands or broadcasting messages to every player in the server.
- * @author Graham Edgecombe
- */
 public final class ChatMessageHandler extends MessageHandler<ChatMessage> {
 
-	@Override
-	public void handle(Session session, Player player, ChatMessage message) {
-		if (player == null)
-			return;
+    @Override
+    public void handle(Session session, GlowPlayer player, ChatMessage message) {
+        if (player == null)
+            return;
 
-		String text = message.getMessage();
-		if (text.length() > 100) {
-			session.disconnect("Chat message too long.");
-		} else if (text.startsWith("/")) {
-			CommandManager manager = session.getServer().getCommandManager();
-			manager.execute(player, text);
-		} else {
-			player.getWorld().broadcastMessage("<" + player.getName() + "> " + text);
-		}
-	}
+        String text = message.getMessage();
+        text = text.trim();
+        
+        if (text.length() > 100) {
+            session.disconnect("Chat message too long.");
+        } else {
+            player.chat(text);
+        }
+    }
 
 }
-

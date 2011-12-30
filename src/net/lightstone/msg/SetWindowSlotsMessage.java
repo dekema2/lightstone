@@ -1,24 +1,29 @@
 package net.lightstone.msg;
 
-import net.lightstone.model.Item;
+import net.lightstone.inventory.GlowItemStack;
+
+import java.util.Arrays;
 
 public final class SetWindowSlotsMessage extends Message {
 
-	private final int id;
-	private final Item[] items;
+    private final int id;
+    private final GlowItemStack[] items;
 
-	public SetWindowSlotsMessage(int id, Item[] items) {
-		this.id = id;
-		this.items = items;
-	}
+    public SetWindowSlotsMessage(int id, GlowItemStack[] items) {
+        this.id = id;
+        this.items = items;
+    }
 
-	public int getId() {
-		return id;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public Item[] getItems() {
-		return items;
-	}
+    public GlowItemStack[] getItems() {
+        return items;
+    }
 
+    @Override
+    public String toString() {
+        return "SetWindowSlotsMessage{id=" + id + ",slots=" + Arrays.toString(items) + "}";
+    }
 }
-

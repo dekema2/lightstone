@@ -9,22 +9,25 @@ import net.lightstone.msg.HealthMessage;
 
 public final class HealthCodec extends MessageCodec<HealthMessage> {
 
-	public HealthCodec() {
-		super(HealthMessage.class, 0x08);
-	}
+    public HealthCodec() {
+        super(HealthMessage.class, 0x08);
+    }
 
-	@Override
-	public HealthMessage decode(ChannelBuffer buffer) throws IOException {
-		int health = buffer.readUnsignedByte();
-		return new HealthMessage(health);
-	}
+    @Override
+    public HealthMessage decode(ChannelBuffer buffer) throws IOException {
+        int health = buffer.readShort();
+        int food = buffer.readShort();
+        float foodSaturation = buffer.readFloat();
+        return new HealthMessage(health, food, foodSaturation);
+    }
 
-	@Override
-	public ChannelBuffer encode(HealthMessage message) throws IOException {
-		ChannelBuffer buffer = ChannelBuffers.buffer(1);
-		buffer.writeByte(message.getHealth());
-		return buffer;
-	}
+    @Override
+    public ChannelBuffer encode(HealthMessage message) throws IOException {
+        ChannelBuffer buffer = ChannelBuffers.buffer(9);
+        buffer.writeShort(message.getHealth());
+        buffer.writeShort(message.getFood());
+        buffer.writeFloat(message.getFoodSaturation());
+        return buffer;
+    }
 
 }
-
