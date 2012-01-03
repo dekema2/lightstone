@@ -54,6 +54,7 @@ Credits
 ### Contributors
 
  * [Graham Edgecombe](https://github.com/grahamedgecombe) - the original creator of lightstone
+ * Daniel Vidmar(creatorfromhell) for any future updates
 
 
 ### Miscellaneous Credits
